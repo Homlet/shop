@@ -79,12 +79,3 @@ LOG_LEVEL=INFO
 docker build -t shopping-list-organizer .
 docker run -p 8080:8080 shopping-list-organizer
 ```
-
-## License
-
-MIT License
-
-## Acknowledgements
-
-- AnyList for their service
-- OpenAI/Anthropic for their LLM APIs
