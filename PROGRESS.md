@@ -4,13 +4,14 @@ This file tracks progress against the MoSCoW requirements defined in `moscow.md`
 
 ## Must Have (M)
 
-- [x] 1. Integration with existing Alexa list skill (AnyList)
-  - Implemented AnyListProvider service
-  - Authentication and list fetching functionality
+- [x] 1. Integration with existing Alexa list skill 
+  - Now implemented via Home Assistant Todo List integration
+  - Full list discovery and item retrieval
   
 - [x] 2. API connection to fetch shopping list from chosen service
   - REST endpoints for list/item fetching 
   - Error handling for API connection issues
+  - Robust integration with various Todo list providers
 
 - [x] 3. LLM integration for deduplication, categorization, and store section sorting
   - Implemented LLMService with OpenAI and Anthropic support
@@ -103,4 +104,10 @@ This file tracks progress against the MoSCoW requirements defined in `moscow.md`
 
 ## Won't Have (W)
 
-- Not implementing items marked as "Won't Have" per requirements
+- [x] 10. Basic manual editing of processed list
+- [x] 17. Manual item reordering after LLM processing
+- [x] 25. Simple admin interface to monitor system health/usage
+- [x] 27. Webhook/real-time notifications when new items are added to Alexa list
+- [x] 29. Cache processed lists to avoid re-processing identical shopping lists
+- [x] 31. Ability to add new items to shopping lists from the app (removed as per requirement)
+- [x] 32. Ability to mark items as complete from the app (removed as per requirement)

@@ -36,3 +36,5 @@
 25. Simple admin interface to monitor system health/usage
 27. Webhook/real-time notifications when new items are added to Alexa list
 29. Cache processed lists to avoid re-processing identical shopping lists
+31. Ability to add new items to shopping lists from the app
+32. Ability to mark items as complete from the app

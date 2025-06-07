@@ -7,9 +7,11 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings that can be loaded from environment variables or HA addon config."""
     
-    # API keys and credentials
-    anylist_email: str = Field("", env="ANYLIST_EMAIL")
-    anylist_password: str = Field("", env="ANYLIST_PASSWORD")
+    # Home Assistant connection settings
+    ha_url: str = Field("http://supervisor/core", env="HA_URL")  # Default URL when running as addon
+    ha_token: str = Field("", env="HA_TOKEN")  # Long-lived access token
+    
+    # LLM settings
     llm_api_key: str = Field("", env="LLM_API_KEY")
     llm_provider: str = Field("openai", env="LLM_PROVIDER")  # "openai" or "anthropic"
     

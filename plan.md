@@ -17,7 +17,8 @@
 - Structured prompting for consistent categorization
 
 **List Service Integration:** 
-- Start with AnyList API (good documentation)
+- Home Assistant Todo API integration
+- Specialized handlers for different todo list integrations (especially Bring!)
 - HTTP client with proper authentication handling
 
 **Containerization:** Docker
@@ -39,7 +40,7 @@ shop/
 │   ├── main.py              # FastAPI app
 │   ├── config.py            # Settings management
 │   ├── services/
-│   │   ├── list_provider.py # AnyList integration
+│   │   ├── list_provider.py # Home Assistant Todo API integration
 │   │   ├── llm_service.py   # OpenAI/Claude integration
 │   │   └── formatter.py     # Receipt formatting
 │   └── static/              # Frontend files
@@ -51,10 +52,11 @@ shop/
 ### Phase 1: Core Pipeline (Week 1-2)
 **Goal:** Get basic list → LLM → formatted output working
 1. Set up FastAPI skeleton with health check endpoint
-2. Implement AnyList API integration (fetch lists)
-3. Create basic LLM service with structured prompting
-4. Build simple receipt formatter (plain text first)
-5. Create minimal web UI with "Process List" button
+2. Implement Home Assistant Todo API integration (fetch lists)
+3. Add specialized support for different todo list integrations (Bring!, etc.)
+4. Create basic LLM service with structured prompting
+5. Build simple receipt formatter (plain text first)
+6. Create minimal web UI with "Process List" button
 
 ### Phase 2: HA Integration (Week 3)
 **Goal:** Make it work as HA addon
@@ -108,9 +110,9 @@ arch:
 ports:
   8080/tcp: 8080
 options:
-  anylist_email: ""
-  anylist_password: ""
-  openai_api_key: ""
+  ha_url: "http://supervisor/core"  # Default for HA addons
+  ha_token: ""  # Long-lived access token
+  openai_api_key: ""  # Or claude_api_key if using Anthropic
   default_store: "Grocery Store"
 ```
 

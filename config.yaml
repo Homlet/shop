@@ -1,5 +1,5 @@
 name: Shopping List Organizer
-version: "0.0.1"
+version: "1.0.0"
 slug: shopping_list_organizer
 description: Voice-to-print shopping list processor
 arch:
@@ -10,22 +10,22 @@ startup: application
 init: false
 url: https://github.com/username/shopping-list-organizer
 webui: http://[HOST]:[PORT:8080]
-homeassistant_api: false
+homeassistant_api: true
+auth_api: true
+ingress: true
+ingress_port: 8080
+panel_icon: mdi:clipboard-list
 ports:
   8080/tcp: 8080
 ports_description:
   8080/tcp: Web interface
 options:
-  anylist_email: ""
-  anylist_password: ""
   llm_provider: "openai"
   llm_api_key: ""
   default_store: "Grocery Store"
   receipt_width: 32
   log_level: "INFO"
 schema:
-  anylist_email: str
-  anylist_password: password
   llm_provider: list(openai|anthropic)
   llm_api_key: password
   default_store: str

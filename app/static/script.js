@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.lists && data.lists.length > 0) {
                 renderLists(data.lists);
             } else {
-                listsContainer.innerHTML = '<p>No lists available. Try adding items to your AnyList.</p>';
+                listsContainer.innerHTML = '<p>No lists available. Try adding items to your Home Assistant shopping list.</p>';
             }
         } catch (error) {
             console.error('Error fetching lists:', error);
@@ -83,12 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         items.forEach(item => {
             const listItem = document.createElement('li');
-            listItem.textContent = item.name;
+            listItem.className = 'item-entry';
+            
+            // Create item name span
+            const itemName = document.createElement('span');
+            itemName.textContent = item.name;
+            itemName.className = 'item-name';
+            listItem.appendChild(itemName);
+            
             list.appendChild(listItem);
         });
         
         itemsContainer.appendChild(list);
     }
+    
     
     // Process a list through the LLM
     async function processShoppingList() {
@@ -182,11 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
         itemsSection.style.display = 'block';
     }
     
+    
     // Event listeners
     processBtn.addEventListener('click', processShoppingList);
     printBtn.addEventListener('click', printList);
     downloadBtn.addEventListener('click', downloadList);
     backBtn.addEventListener('click', goBack);
+    
     
     // Fetch stores for the dropdown
     async function fetchStores() {

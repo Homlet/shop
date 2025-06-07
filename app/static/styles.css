@@ -78,13 +78,14 @@ label {
     font-weight: 600;
 }
 
-select {
+select, input[type="text"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
 }
+
 
 /* Lists */
 .list-item {
@@ -103,6 +104,29 @@ select {
 .list-item.selected {
     border-color: #3498db;
     background-color: #ebf5fb;
+}
+
+/* List items */
+.items-list {
+    list-style: none;
+    padding: 0;
+}
+
+.item-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.item-entry:hover {
+    background-color: #f9f9f9;
+}
+
+.item-name {
+    flex-grow: 1;
 }
 
 /* Receipt styling */

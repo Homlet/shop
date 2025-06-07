@@ -124,21 +124,26 @@ Do not include any explanations or notes, just the formatted list.
             }
 
             payload = {
-                "model": "claude-2",
-                "prompt": f"\n\nHuman: {prompt}\n\nAssistant:",
-                "max_tokens_to_sample": 1000,
+                "model": "claude-3-sonnet-20240229",
+                "messages": [
+                    {
+                        "role": "user", 
+                        "content": prompt
+                    }
+                ],
+                "max_tokens": 1000,
                 "temperature": 0.3,
             }
 
             response = await self.client.post(
-                "https://api.anthropic.com/v1/complete",
+                "https://api.anthropic.com/v1/messages",
                 headers=headers,
                 json=payload,
             )
 
             if response.status_code == 200:
                 result = response.json()
-                return result.get("completion", "").strip()
+                return result.get("content", [{}])[0].get("text", "").strip()
             else:
                 error_msg = f"Anthropic API error: {response.status_code} - {response.text}"
                 logger.error(error_msg)

@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .services.list_provider import get_list_provider, AnyListProvider
+from .services.list_provider import get_list_provider, HomeAssistantListProvider
 from .services.llm_service import get_llm_service, LLMService
 from .services.formatter import get_formatter, ReceiptFormatter
 
@@ -82,7 +82,19 @@ async def get_lists():
 async def get_list_items(list_id: str):
     """Get items from a specific list."""
     try:
-        items = await list_provider.get_list_items(list_id)
+        # First get all lists to identify the integration type
+        all_lists = await list_provider.get_lists()
+        integration_type = "unknown"
+        
+        # Find the matching list to get its integration type
+        for lst in all_lists:
+            if lst["id"] == list_id:
+                integration_type = lst.get("integration", "unknown")
+                logger.info(f"Found integration type for {list_id}: {integration_type}")
+                break
+        
+        # Get items with the integration type
+        items = await list_provider.get_list_items(list_id, integration_type=integration_type)
         return {"items": items}
     except Exception as e:
         logger.exception(f"Error fetching list items for list {list_id}")
@@ -90,6 +102,7 @@ async def get_list_items(list_id: str):
 
 
 @app.post("/api/lists/{list_id}/process")
+@app.get("/api/lists/{list_id}/process")
 async def process_list(
     list_id: str, 
     store_name: Optional[str] = Query(None, description="Store name for context"),
@@ -97,8 +110,19 @@ async def process_list(
 ):
     """Process a shopping list through the LLM and format it for output."""
     try:
-        # Get list items
-        items = await list_provider.get_list_items(list_id)
+        # First get all lists to identify the integration type
+        all_lists = await list_provider.get_lists()
+        integration_type = "unknown"
+        
+        # Find the matching list to get its integration type
+        for lst in all_lists:
+            if lst["id"] == list_id:
+                integration_type = lst.get("integration", "unknown")
+                logger.info(f"Found integration type for {list_id}: {integration_type}")
+                break
+        
+        # Get list items with the integration type
+        items = await list_provider.get_list_items(list_id, integration_type=integration_type)
         if not items:
             raise HTTPException(status_code=404, detail="List is empty or not found")
         
@@ -129,6 +153,10 @@ async def get_stores():
             {"id": "convenience", "name": "Convenience Store"}
         ]
     }
+
+
+
+
 
 
 if __name__ == "__main__":
