@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List Organizer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Shopping List Organizer</h1>
+        </header>
+        
+        <main>
+            <div class="card">
+                <h2>Available Lists</h2>
+                <div id="lists-container">
+                    <p class="loading">Loading lists...</p>
+                </div>
+            </div>
+            
+            <div class="card" id="items-section" style="display: none;">
+                <h2>List Items</h2>
+                <div id="items-container"></div>
+                <div class="form-group">
+                    <label for="store-select">Store:</label>
+                    <select id="store-select">
+                        <option value="Grocery Store">Grocery Store</option>
+                        <option value="Supermarket">Supermarket</option>
+                        <option value="Convenience Store">Convenience Store</option>
+                    </select>
+                </div>
+                <button id="process-btn" class="btn">Process List</button>
+            </div>
+            
+            <div class="card" id="result-section" style="display: none;">
+                <h2>Processed List</h2>
+                <div id="result-container" class="receipt-preview"></div>
+                <div class="btn-group">
+                    <button id="print-btn" class="btn">Print</button>
+                    <button id="download-btn" class="btn">Download</button>
+                    <button id="back-btn" class="btn">Back</button>
+                </div>
+            </div>
+            
+            <div id="loading-overlay" style="display: none;">
+                <div class="spinner"></div>
+                <p>Processing your list...</p>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/static/script.js"></script>
+</body>
+</html>
