@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     ha_token: str = Field("", env="HA_TOKEN")  # Long-lived access token
     
     # LLM settings
-    llm_api_key: str = Field("", env="LLM_API_KEY")
-    llm_provider: str = Field("openai", env="LLM_PROVIDER")  # "openai" or "anthropic"
+    llm_api_key: str = Field("", env="LLM_API_KEY")  # API key for the selected model
+    llm_model: str = Field("", env="LLM_MODEL")  # Model ID (e.g., gpt-3.5-turbo or anthropic/claude-3-sonnet-20240229)
     
     # Store settings
     default_store: str = Field("Grocery Store", env="DEFAULT_STORE")

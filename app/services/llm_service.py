@@ -13,57 +13,37 @@ class LLMService:
     """Service for interacting with LLM APIs to process shopping lists."""
 
     def __init__(self):
-        # Initialize models based on configuration
-        # FIXME: not sure the named model here will always be used
-        self.model_name = None
-        if settings.llm_provider.lower() == "anthropic":
-            self.model_name = "anthropic/claude-3-sonnet-20240229"
-        else:
-            self.model_name = "openai/gpt-3.5-turbo"
-
-        # Configure the model instance
+        # Initialize model instance
         self.model = None
+        self.model_id = settings.llm_model
+
+        # Only proceed if a model is specified
+        if not self.model_id:
+            logger.error("No LLM model specified in settings")
+            return
 
         try:
-            # Try to get the appropriate model
+            # Get the specified model directly
+            logger.info(f"Initializing LLM model: {self.model_id}")
+            self.model = llm.get_model(self.model_id)
+
+            # Set the API key directly on the model
             if settings.llm_api_key:
-                # First, try to get all available models
-                llm_models = llm.get_models()
-                logger.info(
-                    f"Available models: {[m.model_id for m in llm_models]}"
+                self.model.key = settings.llm_api_key
+                logger.info(f"API key set for model: {self.model_id}")
+            else:
+                logger.warning(
+                    f"No API key provided for model: {self.model_id}"
                 )
 
-                # Find a model matching our provider
-                for model in llm_models:
-                    if settings.llm_provider.lower() in model.model_id:
-                        self.model = model
-                        logger.info(f"Found matching model: {model.model_id}")
-                        # Set the API key
-                        if settings.llm_provider.lower() == "anthropic":
-                            model.key = settings.llm_api_key
-                        elif settings.llm_provider.lower() == "openai":
-                            model.key = settings.llm_api_key
-                        break
-
-                # If no model was found by provider match, try to get it directly
-                if not self.model:
-                    logger.info(
-                        f"No matching model found, trying direct lookup: {self.model_name}"
-                    )
-                    self.model = llm.get_model(self.model_name)
-
-                    # Set API key directly
-                    if settings.llm_provider.lower() == "anthropic":
-                        self.model.key = settings.llm_api_key
-                    elif settings.llm_provider.lower() == "openai":
-                        self.model.key = settings.llm_api_key
-
-            if not self.model:
-                logger.error(
-                    f"Failed to initialize LLM model for {settings.llm_provider}"
-                )
         except Exception as e:
             logger.exception(f"Error initializing LLM model: {str(e)}")
+            # Log available models to help troubleshoot
+            try:
+                available_models = [m.model_id for m in llm.get_models()]
+                logger.info(f"Available models: {available_models}")
+            except:
+                pass
 
     async def process_shopping_list(
         self, items: List[Dict[str, Any]], store_name: Optional[str] = None
@@ -92,15 +72,15 @@ class LLMService:
         try:
             # Check if we have the required configuration
             if not settings.llm_api_key:
-                logger.error(f"{settings.llm_provider} API key not configured")
+                logger.error("LLM API key not configured")
                 return "Error: LLM API key not configured"
 
             if not self.model:
-                logger.error(f"No {settings.llm_provider} model is configured")
+                logger.error("LLM model not configured properly")
                 return "Error: LLM model not configured properly"
 
             # Process through the LLM library
-            logger.info(f"Processing shopping list with {self.model_name}")
+            logger.info(f"Processing shopping list with {self.model_id}")
 
             # Add system prompt for better context
             system_prompt = (
@@ -122,9 +102,7 @@ class LLMService:
             return response.text().strip()
 
         except Exception as e:
-            logger.exception(
-                f"Error processing with {settings.llm_provider}: {str(e)}"
-            )
+            logger.exception(f"Error processing with LLM: {str(e)}")
             return f"Error processing list: {str(e)}"
 
     def _build_prompt(self, raw_list: str, store_name: str) -> str:
