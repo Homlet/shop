@@ -1,96 +1,43 @@
-# Shopping List Organizer
+# Home Assistant Add-on: Shopping List Organizer
 
-> **Vibe Coded™** - This project was coded entirely by an AI assistant with human guidance, embodying a relaxed approach to development that focuses on getting things done while maintaining quality code. The implementation follows MoSCoW prioritization and a phased delivery plan, with an emphasis on practical, user-focused features.
+[![GitHub Release][releases-shield]][releases]
+![Project Stage][project-stage-shield]
+[![License][license-shield]](LICENSE.md)
 
 A Home Assistant addon that organizes shopping lists created with voice assistants. It processes the lists using LLM technology to deduplicate, categorize items by store sections, and format them for viewing on smartphones or printing on receipt paper.
 
-## Features
+## About
 
-- Direct integration with Home Assistant shopping list
-- Syncs with voice assistants through Home Assistant integrations
-- LLM processing for list deduplication and store section categorization
-- Formatting for receipt printers (58mm thermal printer compatible)
-- Mobile-responsive web interface for viewing processed lists
-- Print functionality for thermal printers
-- Store selection for better categorization context
-- Download as text file
+This Home Assistant add-on helps organize your shopping lists created with voice assistants. It connects to your Home Assistant todo lists, processes them using AI, and presents a neatly organized list sorted by store sections.
 
-## Setup and Installation
+Key features:
+- Direct integration with Home Assistant shopping lists
+- Support for multiple todo list integrations (Alexa, Google Tasks, Todoist, etc.)
+- AI-powered list processing (deduplication, categorization by store sections)
+- Support for multiple store profiles with custom sections
+- Formatting for receipt printers (58mm or 80mm)
+- Mobile-responsive web interface
+- Print and download functionality
 
-### Prerequisites
+## Installation
 
-- Home Assistant instance with the Shopping List integration enabled
-- Voice assistant (Alexa, Google Assistant, etc.) integrated with Home Assistant
-- Long-lived access token for Home Assistant (if running outside Home Assistant)
-- OpenAI API key or Anthropic Claude API key
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https://github.com/Homlet/shop)
 
-### Installation
+1. Click the button above or manually add the repository URL to your Home Assistant add-on store
+2. Find the "Shopping List Organizer" add-on and click install
+3. Configure the add-on (you'll need an LLM API key)
+4. Start the add-on
+5. Check the logs to make sure it started correctly
 
-1. Add this repository to your Home Assistant add-on store
-2. Install the "Shopping List Organizer" add-on
-3. Configure the add-on with your credentials:
-   - LLM provider choice (OpenAI or Anthropic)
-   - LLM API key
-   - Default store name
+## Documentation
 
-### Configuration Options
-
-| Option | Description |
-|--------|-------------|
-| `llm_provider` | LLM provider to use: "openai" or "anthropic" |
-| `llm_api_key` | API key for the selected LLM provider |
-| `default_store` | Default store name for categorization |
-| `receipt_width` | Receipt paper width in characters (32 for 58mm printers, 48 for 80mm) |
-| `log_level` | Logging level: DEBUG, INFO, WARNING, or ERROR |
-
-## Usage
-
-1. Add items to your Home Assistant shopping list (manually or via voice assistant)
-2. Open the Shopping List Organizer web interface
-3. Select the shopping list
-4. Choose which store you're going to
-5. Click "Process List"
-6. View your organized list on screen or print it
-
-## Development
-
-### Local Development Setup
-
-1. Clone this repository
-2. Create a `.env` file with the required environment variables (see below)
-3. Install dependencies: `pip install -r requirements.txt`
-4. Run the application: `python -m uvicorn app.main:app --reload`
-
-### Environment Variables
-
-```
-# Home Assistant settings
-HA_URL=http://localhost:8123
-HA_TOKEN=your_long_lived_access_token
-
-# LLM provider settings
-LLM_PROVIDER=openai
-LLM_API_KEY=your-api-key
-
-# Store settings
-DEFAULT_STORE=Grocery Store
-
-# Printer settings
-RECEIPT_WIDTH=32
-
-# App settings
-LOG_LEVEL=INFO
-HOST=0.0.0.0
-PORT=8080
-```
-
-### Building the Docker Image
-
-```bash
-docker build -t shopping-list-organizer .
-docker run -p 8080:8080 shopping-list-organizer
-```
+Full documentation is available in the [DOCS.md](./shop/DOCS.md) file.
 
 ## License
 
 MIT License
+
+[releases-shield]: https://img.shields.io/github/release/Homlet/shop.svg
+[releases]: https://github.com/Homlet/shop/releases
+[project-stage-shield]: https://img.shields.io/badge/project%20stage-production%20ready-brightgreen.svg
+[license-shield]: https://img.shields.io/github/license/Homlet/shop.svg
