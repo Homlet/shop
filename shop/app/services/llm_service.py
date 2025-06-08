@@ -2,7 +2,7 @@ import logging
 import json
 import asyncio
 from typing import List, Dict, Any, Optional
-import llm
+import httpx
 
 from ..config import settings
 
@@ -13,37 +13,18 @@ class LLMService:
     """Service for interacting with LLM APIs to process shopping lists."""
 
     def __init__(self):
-        # Initialize model instance
-        self.model = None
+        # Initialize httpx client
+        self.client = httpx.AsyncClient(timeout=60.0)
         self.model_id = settings.llm_model
+        self.api_key = settings.llm_api_key
 
-        # Only proceed if a model is specified
+        # Log initialization
         if not self.model_id:
             logger.error("No LLM model specified in settings")
-            return
-
-        try:
-            # Get the specified model directly
-            logger.info(f"Initializing LLM model: {self.model_id}")
-            self.model = llm.get_model(self.model_id)
-
-            # Set the API key directly on the model
-            if settings.llm_api_key:
-                self.model.key = settings.llm_api_key
-                logger.info(f"API key set for model: {self.model_id}")
-            else:
-                logger.warning(
-                    f"No API key provided for model: {self.model_id}"
-                )
-
-        except Exception as e:
-            logger.exception(f"Error initializing LLM model: {str(e)}")
-            # Log available models to help troubleshoot
-            try:
-                available_models = [m.model_id for m in llm.get_models()]
-                logger.info(f"Available models: {available_models}")
-            except:
-                pass
+        elif not self.api_key:
+            logger.warning(f"No API key provided for model: {self.model_id}")
+        else:
+            logger.info(f"Initialized LLM service with model: {self.model_id}")
 
     async def process_shopping_list(
         self, items: List[Dict[str, Any]], store_name: Optional[str] = None
@@ -68,42 +49,102 @@ class LLMService:
 
         # Build the prompt for the LLM
         prompt = self._build_prompt(raw_list, store)
+        system_prompt = "You are a helpful shopping list organizer assistant."
 
         try:
             # Check if we have the required configuration
-            if not settings.llm_api_key:
+            if not self.api_key:
                 logger.error("LLM API key not configured")
                 return "Error: LLM API key not configured"
 
-            if not self.model:
-                logger.error("LLM model not configured properly")
-                return "Error: LLM model not configured properly"
-
-            # Process through the LLM library
-            logger.info(f"Processing shopping list with {self.model_id}")
-
-            # Add system prompt for better context
-            system_prompt = (
-                "You are a helpful shopping list organizer assistant."
-            )
-
-            # Use the LLM package to make the request in a thread to keep our interface async
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.model.prompt(
-                    prompt,
-                    system=system_prompt,
-                    temperature=0.3,
-                    max_tokens=1000,
-                ),
-            )
-
-            return response.text().strip()
+            # Process through the appropriate API based on model ID
+            if "gpt" in self.model_id.lower():
+                return await self._call_openai_api(prompt, system_prompt)
+            elif "claude" in self.model_id.lower() or "anthropic" in self.model_id.lower():
+                return await self._call_anthropic_api(prompt, system_prompt)
+            else:
+                logger.error(f"Unsupported model type: {self.model_id}")
+                return f"Error: Unsupported model type: {self.model_id}"
 
         except Exception as e:
             logger.exception(f"Error processing with LLM: {str(e)}")
             return f"Error processing list: {str(e)}"
+
+    async def _call_openai_api(self, prompt: str, system_prompt: str) -> str:
+        """Call OpenAI API with the given prompt."""
+        try:
+            payload = {
+                "model": self.model_id,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.3,
+                "max_tokens": 1000
+            }
+            
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            }
+            
+            response = await self.client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers=headers,
+                json=payload
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"OpenAI API error: {response.status_code} - {response.text}")
+                return f"Error calling OpenAI API: {response.status_code}"
+                
+            result = response.json()
+            return result["choices"][0]["message"]["content"].strip()
+            
+        except Exception as e:
+            logger.exception(f"Error calling OpenAI API: {str(e)}")
+            return f"Error calling OpenAI API: {str(e)}"
+
+    async def _call_anthropic_api(self, prompt: str, system_prompt: str) -> str:
+        """Call Anthropic API with the given prompt."""
+        try:
+            # Handle both full model names and simplified names
+            model_id = self.model_id
+            if "/" not in model_id and "claude" in model_id.lower():
+                model_id = f"anthropic/{model_id}"
+            
+            payload = {
+                "model": model_id,
+                "system": system_prompt,
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.3,
+                "max_tokens": 1000
+            }
+            
+            headers = {
+                "Content-Type": "application/json",
+                "x-api-key": self.api_key,
+                "anthropic-version": "2023-06-01"
+            }
+            
+            response = await self.client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers=headers,
+                json=payload
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Anthropic API error: {response.status_code} - {response.text}")
+                return f"Error calling Anthropic API: {response.status_code}"
+                
+            result = response.json()
+            return result["content"][0]["text"].strip()
+            
+        except Exception as e:
+            logger.exception(f"Error calling Anthropic API: {str(e)}")
+            return f"Error calling Anthropic API: {str(e)}"
 
     def _build_prompt(self, raw_list: str, store_name: str) -> str:
         """Build the prompt for the LLM with store-specific sections."""
@@ -154,8 +195,8 @@ Do not include any explanations or notes, just the formatted list.
         return ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Household"]
 
     async def close(self):
-        """No need to close anything with the LLM package."""
-        pass
+        """Close the HTTP client."""
+        await self.client.aclose()
 
 
 # Factory function for getting the LLM service
