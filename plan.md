@@ -92,7 +92,7 @@ Process this shopping list for {store_name}:
 
 Tasks:
 1. Remove duplicates (combine quantities)
-2. Sort into store sections: Produce, Dairy, Meat, Pantry, Frozen, Household
+2. Sort into store sections: {sections_text}
 3. Format for 58mm receipt paper (max 32 chars width)
 
 Output as structured text ready for printing.
@@ -116,6 +116,30 @@ options:
   llm_model: ""  # Required: model ID like gpt-3.5-turbo or anthropic/claude-3-sonnet-20240229
   llm_api_key: ""  # Required: API key for the selected model provider
   default_store: "Grocery Store"
+  stores:
+    - name: "Grocery Store"
+      sections:
+        - "Produce"
+        - "Dairy"
+        - "Meat"
+        - "Pantry"
+        - "Frozen"
+        - "Household"
+    - name: "Supermarket"
+      sections:
+        - "Fruits & Vegetables"
+        - "Dairy & Eggs"
+        - "Meat & Seafood" 
+        - "Bakery"
+        - "Canned Goods"
+        - "Frozen Foods"
+        - "Cleaning Supplies"
+    - name: "Convenience Store"
+      sections:
+        - "Snacks"
+        - "Beverages"
+        - "Quick Meals"
+        - "Essentials"
 ```
 
 **Docker Optimization:**

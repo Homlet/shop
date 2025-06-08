@@ -112,15 +112,18 @@ async def process_list(
 
 @app.get("/api/stores")
 async def get_stores():
-    """Get available store profiles (placeholder for future implementation)."""
-    # In the future, this would fetch from a database or config
-    return {
-        "stores": [
-            {"id": "grocery", "name": "Grocery Store"},
-            {"id": "supermarket", "name": "Supermarket"},
-            {"id": "convenience", "name": "Convenience Store"}
-        ]
-    }
+    """Get available store profiles from configuration."""
+    # Convert the stores from the config to the format expected by the frontend
+    stores = []
+    for store in settings.stores:
+        store_id = store["name"].lower().replace(" ", "_")
+        stores.append({
+            "id": store_id,
+            "name": store["name"],
+            "sections": store["sections"]
+        })
+    
+    return {"stores": stores}
 
 
 if __name__ == "__main__":

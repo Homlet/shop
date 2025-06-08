@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -18,6 +18,26 @@ class Settings(BaseSettings):
     
     # Store settings
     default_store: str = Field("Grocery Store", env="DEFAULT_STORE")
+    
+    # Store configurations with sections
+    stores: List[Dict[str, Any]] = Field(
+        [
+            {
+                "name": "Grocery Store",
+                "sections": ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Household"]
+            },
+            {
+                "name": "Supermarket",
+                "sections": ["Fruits & Vegetables", "Dairy & Eggs", "Meat & Seafood", 
+                            "Bakery", "Canned Goods", "Frozen Foods", "Cleaning Supplies"]
+            },
+            {
+                "name": "Convenience Store",
+                "sections": ["Snacks", "Beverages", "Quick Meals", "Essentials"]
+            }
+        ],
+        env="STORES"
+    )
     
     # Printer settings
     receipt_width: int = Field(32, env="RECEIPT_WIDTH")  # 32 chars for 58mm, ~48 for 80mm

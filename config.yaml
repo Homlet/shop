@@ -20,14 +20,44 @@ ports:
 ports_description:
   8080/tcp: Web interface
 options:
-  llm_provider: "openai"
+  llm_model: "gpt-3.5-turbo"
   llm_api_key: ""
+  todo_list_entity_id: "todo.shopping"
   default_store: "Grocery Store"
   receipt_width: 32
   log_level: "INFO"
+  stores:
+    - name: "Grocery Store"
+      sections:
+        - "Produce"
+        - "Dairy"
+        - "Meat"
+        - "Pantry"
+        - "Frozen"
+        - "Household"
+    - name: "Supermarket"
+      sections:
+        - "Fruits & Vegetables"
+        - "Dairy & Eggs"
+        - "Meat & Seafood" 
+        - "Bakery"
+        - "Canned Goods"
+        - "Frozen Foods"
+        - "Cleaning Supplies"
+    - name: "Convenience Store"
+      sections:
+        - "Snacks"
+        - "Beverages"
+        - "Quick Meals"
+        - "Essentials"
 schema:
-  llm_provider: list(openai|anthropic)
+  llm_model: str
   llm_api_key: password
+  todo_list_entity_id: str
   default_store: str
   receipt_width: int(32|48)
   log_level: list(DEBUG|INFO|WARNING|ERROR)
+  stores:
+    - name: str
+      sections:
+        - str

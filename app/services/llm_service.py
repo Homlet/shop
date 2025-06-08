@@ -106,14 +106,18 @@ class LLMService:
             return f"Error processing list: {str(e)}"
 
     def _build_prompt(self, raw_list: str, store_name: str) -> str:
-        """Build the prompt for the LLM."""
+        """Build the prompt for the LLM with store-specific sections."""
+        # Get the sections for the specified store
+        store_sections = self._get_store_sections(store_name)
+        sections_text = ", ".join(store_sections)
+
         return f"""
 Process this shopping list for {store_name}:
 {raw_list}
 
 Tasks:
 1. Remove duplicates (combine quantities)
-2. Sort into store sections: Produce, Dairy, Meat, Pantry, Frozen, Household
+2. Sort into store sections: {sections_text}
 3. Format for {settings.receipt_width} character width receipt paper
 
 <example>
@@ -133,6 +137,21 @@ Toiletries
 Output as structured text ready for printing with clear section headers.
 Do not include any explanations or notes, just the formatted list.
 """
+
+    def _get_store_sections(self, store_name: str) -> List[str]:
+        """Get the sections for a specific store from settings."""
+        # Find the store in the settings
+        for store in settings.stores:
+            if store["name"].lower() == store_name.lower():
+                return store["sections"]
+
+        # If not found, return the sections from the default store
+        for store in settings.stores:
+            if store["name"].lower() == settings.default_store.lower():
+                return store["sections"]
+
+        # Fallback to a basic set of sections
+        return ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Household"]
 
     async def close(self):
         """No need to close anything with the LLM package."""
