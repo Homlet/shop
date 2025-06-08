@@ -61,6 +61,22 @@ header h1 {
     background-color: #2980b9;
 }
 
+.btn-small {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-small:hover {
+    background-color: #2980b9;
+}
+
 .btn-group {
     display: flex;
     gap: 10px;

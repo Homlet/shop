@@ -112,6 +112,7 @@ ports:
 options:
   ha_url: "http://supervisor/core"  # Default for HA addons
   ha_token: ""  # Long-lived access token
+  todo_list_entity_id: "todo.shopping"  # Entity ID of your shopping list in Home Assistant
   llm_model: ""  # Required: model ID like gpt-3.5-turbo or anthropic/claude-3-sonnet-20240229
   llm_api_key: ""  # Required: API key for the selected model provider
   default_store: "Grocery Store"

@@ -67,62 +67,30 @@ async def health_check():
     return {"status": "ok"}
 
 
-@app.get("/api/lists")
-async def get_lists():
-    """Get all available shopping lists."""
+@app.get("/api/items")
+async def get_items(limit: Optional[int] = Query(5, description="Maximum number of items to return")):
+    """Get items from the configured shopping list with optional limit."""
     try:
-        lists = await list_provider.get_lists()
-        return {"lists": lists}
+        result = await list_provider.get_list_items(limit=limit)
+        return result
     except Exception as e:
-        logger.exception("Error fetching lists")
+        logger.exception("Error fetching list items")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/lists/{list_id}/items")
-async def get_list_items(list_id: str):
-    """Get items from a specific list."""
-    try:
-        # First get all lists to identify the integration type
-        all_lists = await list_provider.get_lists()
-        integration_type = "unknown"
-        
-        # Find the matching list to get its integration type
-        for lst in all_lists:
-            if lst["id"] == list_id:
-                integration_type = lst.get("integration", "unknown")
-                logger.info(f"Found integration type for {list_id}: {integration_type}")
-                break
-        
-        # Get items with the integration type
-        items = await list_provider.get_list_items(list_id, integration_type=integration_type)
-        return {"items": items}
-    except Exception as e:
-        logger.exception(f"Error fetching list items for list {list_id}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/api/lists/{list_id}/process")
-@app.get("/api/lists/{list_id}/process")
+@app.post("/api/process")
+@app.get("/api/process")
 async def process_list(
-    list_id: str, 
     store_name: Optional[str] = Query(None, description="Store name for context"),
-    format_type: str = Query("text", description="Output format: text or html")
+    format_type: str = Query("text", description="Output format: text or html"),
+    limit: Optional[int] = Query(None, description="Optional limit for items to process")
 ):
-    """Process a shopping list through the LLM and format it for output."""
+    """Process the shopping list through the LLM and format it for output."""
     try:
-        # First get all lists to identify the integration type
-        all_lists = await list_provider.get_lists()
-        integration_type = "unknown"
+        # Get list items
+        result = await list_provider.get_list_items(limit=limit)
+        items = result["items"]
         
-        # Find the matching list to get its integration type
-        for lst in all_lists:
-            if lst["id"] == list_id:
-                integration_type = lst.get("integration", "unknown")
-                logger.info(f"Found integration type for {list_id}: {integration_type}")
-                break
-        
-        # Get list items with the integration type
-        items = await list_provider.get_list_items(list_id, integration_type=integration_type)
         if not items:
             raise HTTPException(status_code=404, detail="List is empty or not found")
         
@@ -138,7 +106,7 @@ async def process_list(
             return {"format": "text", "content": formatted_output}
             
     except Exception as e:
-        logger.exception(f"Error processing list {list_id}")
+        logger.exception("Error processing list")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -153,10 +121,6 @@ async def get_stores():
             {"id": "convenience", "name": "Convenience Store"}
         ]
     }
-
-
-
-
 
 
 if __name__ == "__main__":

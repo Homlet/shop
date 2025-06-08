@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # Home Assistant connection settings
     ha_url: str = Field("http://supervisor/core", env="HA_URL")  # Default URL when running as addon
     ha_token: str = Field("", env="HA_TOKEN")  # Long-lived access token
+    todo_list_entity_id: str = Field("todo.shopping", env="TODO_LIST_ENTITY_ID")  # Entity ID of the shopping list to use
     
     # LLM settings
     llm_api_key: str = Field("", env="LLM_API_KEY")  # API key for the selected model

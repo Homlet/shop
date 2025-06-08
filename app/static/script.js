@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM elements
-    const listsContainer = document.getElementById('lists-container');
     const itemsContainer = document.getElementById('items-container');
-    const itemsSection = document.getElementById('items-section');
     const resultSection = document.getElementById('result-section');
     const resultContainer = document.getElementById('result-container');
     const processBtn = document.getElementById('process-btn');
@@ -11,66 +9,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('back-btn');
     const storeSelect = document.getElementById('store-select');
     const loadingOverlay = document.getElementById('loading-overlay');
+    const moreItemsSection = document.getElementById('more-items');
+    const remainingCount = document.getElementById('remaining-count');
     
     // State
-    let selectedListId = null;
     let processedContent = null;
+    const defaultItemLimit = 5;
     
-    // Fetch and display available lists
-    async function fetchLists() {
+    // Fetch and display shopping list items
+    async function fetchItems() {
+        const limit = defaultItemLimit;
         try {
-            const response = await fetch('/api/lists');
-            const data = await response.json();
+            itemsContainer.innerHTML = '<p class="loading">Loading items...</p>';
+            moreItemsSection.style.display = 'none';
             
-            if (data.lists && data.lists.length > 0) {
-                renderLists(data.lists);
-            } else {
-                listsContainer.innerHTML = '<p>No lists available. Try adding items to your Home Assistant shopping list.</p>';
-            }
-        } catch (error) {
-            console.error('Error fetching lists:', error);
-            listsContainer.innerHTML = '<p class="error">Failed to load lists. Please check your connection and try again.</p>';
-        }
-    }
-    
-    // Render lists in the UI
-    function renderLists(lists) {
-        listsContainer.innerHTML = '';
-        
-        lists.forEach(list => {
-            const listEl = document.createElement('div');
-            listEl.className = 'list-item';
-            listEl.textContent = list.name;
-            listEl.dataset.id = list.id;
-            
-            listEl.addEventListener('click', () => {
-                document.querySelectorAll('.list-item').forEach(el => el.classList.remove('selected'));
-                listEl.classList.add('selected');
-                selectedListId = list.id;
-                fetchListItems(list.id);
-            });
-            
-            listsContainer.appendChild(listEl);
-        });
-    }
-    
-    // Fetch items from a selected list
-    async function fetchListItems(listId) {
-        itemsContainer.innerHTML = '<p class="loading">Loading items...</p>';
-        itemsSection.style.display = 'block';
-        
-        try {
-            const response = await fetch(`/api/lists/${listId}/items`);
+            const response = await fetch(`/api/items${limit ? `?limit=${limit}` : ''}`);
             const data = await response.json();
             
             if (data.items && data.items.length > 0) {
                 renderItems(data.items);
+                
+                // Show "and X more items" if truncated
+                if (data.truncated) {
+                    const remaining = data.total_count - data.items.length;
+                    remainingCount.textContent = remaining;
+                    moreItemsSection.style.display = 'block';
+                }
             } else {
-                itemsContainer.innerHTML = '<p>This list is empty. Add some items first.</p>';
+                itemsContainer.innerHTML = '<p>Your shopping list is empty. Try adding some items in Home Assistant.</p>';
             }
         } catch (error) {
-            console.error('Error fetching list items:', error);
-            itemsContainer.innerHTML = '<p class="error">Failed to load items. Please try again.</p>';
+            console.error('Error fetching items:', error);
+            itemsContainer.innerHTML = '<p class="error">Failed to load items. Please check your connection and try again.</p>';
         }
     }
     
@@ -97,20 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         itemsContainer.appendChild(list);
     }
     
-    
-    // Process a list through the LLM
+    // Process the shopping list through the LLM
     async function processShoppingList() {
-        if (!selectedListId) {
-            alert('Please select a list first');
-            return;
-        }
-        
         // Show loading overlay
         loadingOverlay.style.display = 'flex';
         
         try {
             const storeName = storeSelect.value;
-            const response = await fetch(`/api/lists/${selectedListId}/process?store_name=${encodeURIComponent(storeName)}&format_type=text`);
+            const response = await fetch(`/api/process?store_name=${encodeURIComponent(storeName)}&format_type=text`);
             const data = await response.json();
             
             // Store the processed content
@@ -120,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
             resultContainer.textContent = processedContent;
             resultSection.style.display = 'block';
             
-            // Hide other sections
-            itemsSection.style.display = 'none';
+            // Scroll to result section
+            resultSection.scrollIntoView({ behavior: 'smooth' });
             
         } catch (error) {
             console.error('Error processing list:', error);
@@ -187,16 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Go back to the items view
     function goBack() {
         resultSection.style.display = 'none';
-        itemsSection.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
-    
-    // Event listeners
-    processBtn.addEventListener('click', processShoppingList);
-    printBtn.addEventListener('click', printList);
-    downloadBtn.addEventListener('click', downloadList);
-    backBtn.addEventListener('click', goBack);
-    
     
     // Fetch stores for the dropdown
     async function fetchStores() {
@@ -219,7 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // Event listeners
+    processBtn.addEventListener('click', processShoppingList);
+    printBtn.addEventListener('click', printList);
+    downloadBtn.addEventListener('click', downloadList);
+    backBtn.addEventListener('click', goBack);
+    
     // Initialize
-    fetchLists();
+    fetchItems();
     fetchStores();
 });

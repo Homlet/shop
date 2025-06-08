@@ -14,16 +14,13 @@
         
         <main>
             <div class="card">
-                <h2>Available Lists</h2>
-                <div id="lists-container">
-                    <p class="loading">Loading lists...</p>
+                <h2>Shopping List</h2>
+                <div id="items-container">
+                    <p class="loading">Loading items...</p>
                 </div>
-            </div>
-            
-            <div class="card" id="items-section" style="display: none;">
-                <h2>List Items</h2>
-                <div id="items-container"></div>
-                
+                <div id="more-items" style="display: none;">
+                    <p>...and <span id="remaining-count">0</span> more items</p>
+                </div>
                 
                 <div class="form-group">
                     <label for="store-select">Store:</label>
