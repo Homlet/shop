@@ -58,8 +58,8 @@ schema:
   llm_api_key: password
   todo_list_entity_id: str
   default_store: str
-  receipt_width: int(32|48)
-  log_level: list(DEBUG|INFO|WARNING|ERROR)
+  receipt_width: int(32,48)
+  log_level: list(DEBUG,INFO,WARNING,ERROR)
   stores:
     - name: str
       sections:
