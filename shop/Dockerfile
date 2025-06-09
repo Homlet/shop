@@ -4,7 +4,10 @@ FROM $BUILD_FROM
 COPY . .
 WORKDIR /app
 
-RUN apk --update add jq
+RUN apk --update add --no-cache \
+    jq \
+    python3 \
+    py3-pip
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
