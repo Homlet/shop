@@ -1,7 +1,13 @@
 import os
+import json
+import logging
 from typing import Optional, List, Dict, Any
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
+
+# Configure logging for the config module
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -47,10 +53,59 @@ class Settings(BaseSettings):
     port: int = Field(8080, env="PORT")
     host: str = Field("0.0.0.0", env="HOST")
 
+    @field_validator('stores', mode='before')
+    @classmethod
+    def parse_stores(cls, value):
+        """Parse the STORES environment variable if it's a string."""
+        if isinstance(value, str):
+            try:
+                logger.info(f"Parsing STORES from string: {value}")
+                return json.loads(value)
+            except json.JSONDecodeError as e:
+                logger.error(f"Error parsing STORES JSON: {e}")
+                logger.error(f"Invalid JSON: {value}")
+                # Return default value on error
+                return [
+                    {
+                        "name": "Grocery Store",
+                        "sections": ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Household"]
+                    },
+                    {
+                        "name": "Supermarket",
+                        "sections": ["Fruits & Vegetables", "Dairy & Eggs", "Meat & Seafood", 
+                                    "Bakery", "Canned Goods", "Frozen Foods", "Cleaning Supplies"]
+                    },
+                    {
+                        "name": "Convenience Store",
+                        "sections": ["Snacks", "Beverages", "Quick Meals", "Essentials"]
+                    }
+                ]
+        return value
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
 
+# Log environment variables for debugging
+logger.info("Environment variables:")
+for key, value in os.environ.items():
+    if key in ["LLM_API_KEY", "HA_TOKEN"]:
+        # Don't log sensitive values
+        logger.info(f"{key}: [REDACTED]")
+    elif key == "STORES":
+        logger.info(f"{key}: {value[:50]}..." if len(str(value)) > 50 else f"{key}: {value}")
+    else:
+        logger.info(f"{key}: {value}")
+
 # Global settings object
 settings = Settings()
+
+# Log loaded settings
+logger.info(f"Loaded settings:")
+logger.info(f"TODO_LIST_ENTITY_ID: {settings.todo_list_entity_id}")
+logger.info(f"LLM_MODEL: {settings.llm_model}")
+logger.info(f"DEFAULT_STORE: {settings.default_store}")
+logger.info(f"RECEIPT_WIDTH: {settings.receipt_width}")
+logger.info(f"LOG_LEVEL: {settings.log_level}")
+logger.info(f"Number of stores configured: {len(settings.stores)}")

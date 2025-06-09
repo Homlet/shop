@@ -1,34 +1,51 @@
 #!/bin/bash
 
-# For Home Assistant Addons - use the supervisor API token if available
+# Set default environment variables
+export HA_URL=http://supervisor/core
+export PORT=${PORT:-8080}
+export HOST=${HOST:-0.0.0.0}
+
+# Debug: Print environment variables at start
+echo "--- Initial environment variables ---"
+env | sort
+echo "-----------------------------------"
+
+# For Home Assistant Addons - use the supervisor API token
+if [ -n "$SUPERVISOR_TOKEN" ]; then
+    echo "Using Home Assistant Supervisor token for authentication"
+    export HA_TOKEN=${SUPERVISOR_TOKEN}
+fi
+
+# Load configuration from options.json (for HA addon)
 if [ -f /data/options.json ]; then
     echo "Loading configuration from /data/options.json"
     
-    # Set environment variables based on the options.json file
-    export HA_URL=http://supervisor/core
-    export HA_TOKEN=$(jq --raw-output ".ha_token // empty" /data/options.json)
+    # Debug: Show the content of options.json
+    echo "--- Content of options.json ---"
+    cat /data/options.json
+    echo "-----------------------------"
     
-    # If HA_TOKEN is empty, try using the supervisor token
-    if [ -z "$HA_TOKEN" ] && [ -n "$SUPERVISOR_TOKEN" ]; then
-        export HA_TOKEN=${SUPERVISOR_TOKEN}
-        echo "Using Home Assistant Supervisor token for authentication"
-    fi
-    
-    # Export other configuration values
-    export TODO_LIST_ENTITY_ID=$(jq --raw-output ".todo_list_entity_id // \"todo.shopping\"" /data/options.json)
-    export LLM_MODEL=$(jq --raw-output ".llm_model // empty" /data/options.json)
-    export LLM_API_KEY=$(jq --raw-output ".llm_api_key // empty" /data/options.json)
-    export DEFAULT_STORE=$(jq --raw-output ".default_store // \"Grocery Store\"" /data/options.json)
-    export RECEIPT_WIDTH=$(jq --raw-output ".receipt_width // 32" /data/options.json)
-    export LOG_LEVEL=$(jq --raw-output ".log_level // \"INFO\"" /data/options.json)
+    # Export configuration values
+    export TODO_LIST_ENTITY_ID=$(jq -r '.todo_list_entity_id // "todo.shopping"' /data/options.json)
+    export LLM_MODEL=$(jq -r '.llm_model // ""' /data/options.json)
+    export LLM_API_KEY=$(jq -r '.llm_api_key // ""' /data/options.json)
+    export DEFAULT_STORE=$(jq -r '.default_store // "Grocery Store"' /data/options.json)
+    export RECEIPT_WIDTH=$(jq -r '.receipt_width // 32' /data/options.json)
+    export LOG_LEVEL=$(jq -r '.log_level // "INFO"' /data/options.json)
     
     # Store the stores configuration as JSON string
-    export STORES=$(jq --compact-output ".stores // []" /data/options.json)
+    export STORES=$(jq -c '.stores // []' /data/options.json)
+    
+    # Debug: Show the STORES environment variable
+    echo "--- STORES environment variable ---"
+    echo "$STORES"
+    echo "--------------------------------"
 fi
 
-# Set default port and host if not already set
-export PORT=${PORT:-8080}
-export HOST=${HOST:-0.0.0.0}
+# Debug: Print final environment variables
+echo "--- Final environment variables ---"
+env | sort
+echo "----------------------------------"
 
 echo "Starting application on $HOST:$PORT"
 python3 -m uvicorn app.main:app --host $HOST --port $PORT
