@@ -3,9 +3,9 @@ version: "1.0.0"
 slug: shop
 description: Voice-to-print shopping list processor
 arch:
-  - aarch64
   - armv7
-  - amd64
+build_from:
+  armv7: homeassistant/armv7-base-python:3.11-alpine3.19
 startup: application
 init: false
 url: https://github.com/Homlet/shop
