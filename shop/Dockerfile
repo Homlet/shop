@@ -2,7 +2,6 @@ ARG BUILD_FROM
 FROM $BUILD_FROM
 
 COPY . .
-WORKDIR /app
 
 RUN apk --update add --no-cache \
     jq \
