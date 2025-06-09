@@ -49,3 +49,4 @@ jobs:
           push: true
           tags: ghcr.io/homlet/shop-armv7:latest
           labels: ${{ steps.meta.outputs.labels }}
+          file: ./shop/Dockerfile

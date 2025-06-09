@@ -1,10 +1,10 @@
-# Use a base Home Assistant add-on image for armv7
-FROM homeassistant/armv7-base-python:3.11-alpine3.19
+# Use a standard Python image that supports ARM
+FROM python:3.9-slim
 
 WORKDIR /app
 
-# Add dependencies required for Alpine
-RUN apk add --no-cache py3-pip py3-wheel jq
+# Add dependencies required for Debian
+RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 COPY requirements.txt .

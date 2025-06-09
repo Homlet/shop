@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # For Home Assistant Addons - use the supervisor API token if available
 if [ -f /data/options.json ]; then
