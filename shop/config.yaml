@@ -1,5 +1,5 @@
 name: Shopping List Organizer
-version: "1.0.0"
+version: "1.0.1"
 slug: shop
 description: Voice-to-print shopping list processor
 arch:
