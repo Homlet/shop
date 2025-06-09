@@ -4,7 +4,7 @@ slug: shop
 description: Voice-to-print shopping list processor
 arch:
   - armv7
-image: "ghcr.io/homlet/shop-{arch}"
+# Build from Dockerfile
 startup: application
 init: false
 url: https://github.com/Homlet/shop
