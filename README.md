@@ -30,3 +30,5 @@ Key features:
 ## License
 
 MIT License
+
+[license-shield]: https://img.shields.io/github/license/Homlet/shop.svg
