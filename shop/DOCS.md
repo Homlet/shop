@@ -1,4 +1,4 @@
-# Shopping List Organizer
+# Shopping List Organiser
 
 A Home Assistant addon that organizes shopping lists created with voice assistants. It processes the lists using LLM technology to deduplicate, categorize items by store sections, and format them for viewing on smartphones or printing on receipt paper.
 
@@ -6,8 +6,7 @@ A Home Assistant addon that organizes shopping lists created with voice assistan
 
 1. Add this repository to your Home Assistant instance:
    [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https://github.com/Homlet/shop)
-   
-2. Install the "Shopping List Organizer" add-on
+2. Install the "Shopping List Organiser" add-on
 3. Start the add-on
 4. Check the logs to make sure it's working correctly
 
@@ -57,7 +56,7 @@ stores:
 ## Usage
 
 1. Add items to your Home Assistant shopping list (manually or via voice assistant)
-2. Open the Shopping List Organizer web interface (from the sidebar or the addon info page)
+2. Open the Shopping List Organiser web interface (from the sidebar or the addon info page)
 3. Choose which store you're going to
 4. Click "Process List"
 5. View your organized list on screen or print it

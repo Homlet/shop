@@ -28,11 +28,11 @@
 20. List sharing via link/QR code
 22. Configuration settings for receipt paper width (58mm vs 80mm)
 23. Web interface displays processing status/loading indicators
-24. Backup/fallback LLM provider in case primary fails
 
 ## **WON'T HAVE (W)**
 10. Basic manual editing of processed list (if needed)
 17. Manual item reordering after LLM processing
+24. Backup/fallback LLM provider in case primary fails
 25. Simple admin interface to monitor system health/usage
 27. Webhook/real-time notifications when new items are added to Alexa list
 29. Cache processed lists to avoid re-processing identical shopping lists

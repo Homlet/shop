@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set default environment variables
-export HA_URL=http://supervisor/core
+export HA_URL=${HA_URL:-http://supervisor/core}
 export PORT=${PORT:-8080}
 export HOST=${HOST:-0.0.0.0}
 
@@ -26,12 +26,12 @@ if [ -f /data/options.json ]; then
     echo "-----------------------------"
     
     # Export configuration values
-    export TODO_LIST_ENTITY_ID=$(jq -r '.todo_list_entity_id // "todo.shopping"' /data/options.json)
+    export TODO_LIST_ENTITY_ID=$(jq -r '.todo_list_entity_id // ""' /data/options.json)
     export LLM_MODEL=$(jq -r '.llm_model // ""' /data/options.json)
     export LLM_API_KEY=$(jq -r '.llm_api_key // ""' /data/options.json)
-    export DEFAULT_STORE=$(jq -r '.default_store // "Grocery Store"' /data/options.json)
-    export RECEIPT_WIDTH=$(jq -r '.receipt_width // 32' /data/options.json)
-    export LOG_LEVEL=$(jq -r '.log_level // "INFO"' /data/options.json)
+    export DEFAULT_STORE=$(jq -r '.default_store // ""' /data/options.json)
+    export RECEIPT_WIDTH=$(jq -r '.receipt_width // ""' /data/options.json)
+    export LOG_LEVEL=$(jq -r '.log_level // ""' /data/options.json)
     
     # Store the stores configuration as JSON string
     export STORES=$(jq -c '.stores // []' /data/options.json)

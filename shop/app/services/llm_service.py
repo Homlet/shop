@@ -49,7 +49,7 @@ class LLMService:
 
         # Build the prompt for the LLM
         prompt = self._build_prompt(raw_list, store)
-        system_prompt = "You are a helpful shopping list organizer assistant."
+        system_prompt = "You are a helpful shopping list Organiser assistant."
 
         try:
             # Check if we have the required configuration
@@ -60,7 +60,10 @@ class LLMService:
             # Process through the appropriate API based on model ID
             if "gpt" in self.model_id.lower():
                 return await self._call_openai_api(prompt, system_prompt)
-            elif "claude" in self.model_id.lower() or "anthropic" in self.model_id.lower():
+            elif (
+                "claude" in self.model_id.lower()
+                or "anthropic" in self.model_id.lower()
+            ):
                 return await self._call_anthropic_api(prompt, system_prompt)
             else:
                 logger.error(f"Unsupported model type: {self.model_id}")
@@ -77,71 +80,75 @@ class LLMService:
                 "model": self.model_id,
                 "messages": [
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt}
+                    {"role": "user", "content": prompt},
                 ],
                 "temperature": 0.3,
-                "max_tokens": 1000
+                "max_tokens": 1000,
             }
-            
+
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}"
+                "Authorization": f"Bearer {self.api_key}",
             }
-            
+
             response = await self.client.post(
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
-                json=payload
+                json=payload,
             )
-            
+
             if response.status_code != 200:
-                logger.error(f"OpenAI API error: {response.status_code} - {response.text}")
+                logger.error(
+                    f"OpenAI API error: {response.status_code} - {response.text}"
+                )
                 return f"Error calling OpenAI API: {response.status_code}"
-                
+
             result = response.json()
             return result["choices"][0]["message"]["content"].strip()
-            
+
         except Exception as e:
             logger.exception(f"Error calling OpenAI API: {str(e)}")
             return f"Error calling OpenAI API: {str(e)}"
 
-    async def _call_anthropic_api(self, prompt: str, system_prompt: str) -> str:
+    async def _call_anthropic_api(
+        self, prompt: str, system_prompt: str
+    ) -> str:
         """Call Anthropic API with the given prompt."""
         try:
             # Handle both full model names and simplified names
             model_id = self.model_id
             if "/" not in model_id and "claude" in model_id.lower():
                 model_id = f"anthropic/{model_id}"
-            
+
             payload = {
                 "model": model_id,
                 "system": system_prompt,
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.3,
-                "max_tokens": 1000
+                "max_tokens": 1000,
             }
-            
+
             headers = {
                 "Content-Type": "application/json",
                 "x-api-key": self.api_key,
-                "anthropic-version": "2023-06-01"
+                "anthropic-version": "2023-06-01",
             }
-            
+
             response = await self.client.post(
                 "https://api.anthropic.com/v1/messages",
                 headers=headers,
-                json=payload
+                json=payload,
             )
-            
+
             if response.status_code != 200:
-                logger.error(f"Anthropic API error: {response.status_code} - {response.text}")
+                logger.error(
+                    f"Anthropic API error: {response.status_code} - {response.text}"
+                )
                 return f"Error calling Anthropic API: {response.status_code}"
-                
+
             result = response.json()
             return result["content"][0]["text"].strip()
-            
+
         except Exception as e:
             logger.exception(f"Error calling Anthropic API: {str(e)}")
             return f"Error calling Anthropic API: {str(e)}"

@@ -1,4 +1,4 @@
-# Shopping List Organizer - Claude Assistant Guidelines
+# Shopping List Organiser - Claude Assistant Guidelines
 
 ## Project Overview
 This is a Home Assistant addon that organizes shopping lists created with voice assistants. It processes lists using LLM technology to deduplicate items, categorize them by store sections, and format them for viewing on smartphones or printing on receipt paper.

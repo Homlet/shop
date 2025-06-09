@@ -1,65 +1,63 @@
-name: Shopping List Organizer
-version: "1.0.1"
+name: Shopping List Organiser
+version: "1.1.0"
 slug: shop
 description: Voice-to-print shopping list processor
+url: https://github.com/Homlet/shop
 arch:
   - armv7
-# Build from Dockerfile
-startup: application
-init: false
-url: https://github.com/Homlet/shop
+boot: auto
 webui: http://[HOST]:[PORT:8080]
+
 homeassistant_api: true
 auth_api: true
+
 ingress: true
 ingress_port: 8080
-ingress_title: Shopping List Organizer
-panel_icon: mdi:clipboard-list
-panel_title: Shopping List
+
+panel_icon: mdi:invoice-list
 panel_admin: false
+
 ports:
   8080/tcp: 8080
 ports_description:
   8080/tcp: Web interface
-options:
-  llm_model: "gpt-3.5-turbo"
-  llm_api_key: ""
-  todo_list_entity_id: "todo.shopping"
-  default_store: "Grocery Store"
-  receipt_width: 32
-  log_level: "INFO"
-  stores:
-    - name: "Grocery Store"
-      sections:
-        - "Produce"
-        - "Dairy"
-        - "Meat"
-        - "Pantry"
-        - "Frozen"
-        - "Household"
-    - name: "Supermarket"
-      sections:
-        - "Fruits & Vegetables"
-        - "Dairy & Eggs"
-        - "Meat & Seafood" 
-        - "Bakery"
-        - "Canned Goods"
-        - "Frozen Foods"
-        - "Cleaning Supplies"
-    - name: "Convenience Store"
-      sections:
-        - "Snacks"
-        - "Beverages"
-        - "Quick Meals"
-        - "Essentials"
+
 schema:
   llm_model: str
   llm_api_key: password
   todo_list_entity_id: str
   default_store: str
   receipt_width: int(32,48)
-  log_level: list(DEBUG,INFO,WARNING,ERROR)
+  log_level: list(DEBUG|INFO|WARNING|ERROR)
   stores:
     - name: str
       sections:
         - str
+options:
+  llm_model: ""
+  llm_api_key: ""
+  todo_list_entity_id: "todo.shopping"
+  default_store: "Newmarket Tesco"
+  receipt_width: 32
+  log_level: "INFO"
+  stores:
+    - name: Newmarket Tesco
+      sections:
+        - Vegetables
+        - Bakery
+        - Fruit
+        - Flowers
+        - Garden
+        - Homeware
+        - Baby
+        - Toiletries
+        - Pharmacy
+        - Cleaning
+        - Pet
+        - Clothing
+        - Drinks
+        - Snacks & Confectionery
+        - Store Cupboard
+        - Meat & Fish
+        - Ready-to-eat
+        - Dairy

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Remove a load of vibe coded fluff in the release config
+
 ## 1.0.0
 
 - Initial release
