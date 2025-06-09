@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.2
+## 1.1.3
 
 - Remove a load of vibe coded fluff in the release config
 
