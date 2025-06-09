@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /venv/bin/activate
+
 # Set default environment variables
 export HA_URL=${HA_URL:-http://supervisor/core}
 export PORT=${PORT:-8080}

@@ -8,8 +8,9 @@ RUN apk --update add --no-cache \
     jq \
     python3 \
     py3-pip
-RUN python3 -m venv /venv && . /venv/bin/activate
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN python3 -m venv /venv && \
+    . /venv/bin/activate && \
+    pip3 install --no-cache-dir -r requirements.txt
 
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
