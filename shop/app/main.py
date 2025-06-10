@@ -78,8 +78,8 @@ async def read_root(request: Request):
         script_tag = (
             f'<script>window.ingressBasePath = "{ingress_path}";</script>'
         )
-        # Insert the script right before the closing </head> tag
-        content = content.replace("</head>", f"{script_tag}</head>")
+        # Insert the script right after the opening <head> tag
+        content = content.replace("<head>", f"<head>{script_tag}")
         logger.info(f"Serving with ingress path: {ingress_path}")
 
     return HTMLResponse(content=content)
