@@ -1,7 +1,14 @@
 import logging
 import os
 from typing import Dict, List, Optional, Any
-from fastapi import FastAPI, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Depends,
+    Query,
+    BackgroundTasks,
+    Request,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -58,10 +65,24 @@ async def shutdown_event():
 
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root():
-    """Serve the main index page."""
+async def read_root(request: Request):
+    """Serve the main index page with ingress path handling."""
+    # Read the index.html file
     with open("app/static/index.html", "r") as f:
-        return HTMLResponse(content=f.read())
+        content = f.read()
+
+    # Check if running in Home Assistant ingress mode
+    ingress_path = request.headers.get("X-Ingress-Path", "")
+    if ingress_path:
+        # Inject the ingress base path as a variable for the frontend
+        script_tag = (
+            f'<script>window.ingressBasePath = "{ingress_path}";</script>'
+        )
+        # Insert the script right before the closing </head> tag
+        content = content.replace("</head>", f"{script_tag}</head>")
+        logger.info(f"Serving with ingress path: {ingress_path}")
+
+    return HTMLResponse(content=content)
 
 
 @app.get("/api/health")

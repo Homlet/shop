@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             itemsContainer.innerHTML = '<p class="loading">Loading items...</p>';
             moreItemsSection.style.display = 'none';
             
-            const response = await fetch(`./api/items${limit ? `?limit=${limit}` : ''}`);
+            const response = await fetch(`api/items${limit ? `?limit=${limit}` : ''}`);
             const data = await response.json();
             
             if (data.items && data.items.length > 0) {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const storeName = storeSelect.value;
-            const response = await fetch(`./api/process?store_name=${encodeURIComponent(storeName)}&format_type=text`);
+            const response = await fetch(`api/process?store_name=${encodeURIComponent(storeName)}&format_type=text`);
             const data = await response.json();
             
             // Store the processed content
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch stores for the dropdown
     async function fetchStores() {
         try {
-            const response = await fetch('./api/stores');
+            const response = await fetch('api/stores');
             const data = await response.json();
             
             if (data.stores && data.stores.length > 0) {

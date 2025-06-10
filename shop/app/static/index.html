@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping List Organiser</title>
-    <link rel="stylesheet" href="./static/styles.css">
+    <!-- Dynamic base path to handle both local and ingress modes -->
+    <script>
+        // This script sets the base href dynamically based on the environment
+        (function() {
+            // For Home Assistant ingress mode, use the X-Ingress-Path header value
+            // For local development, use '/'
+            var baseHref = '/';
+            // Get base path from X-Ingress-Path if available (for Home Assistant addon mode)
+            if (window.ingressBasePath) {
+                baseHref = window.ingressBasePath;
+                if (!baseHref.endsWith('/')) {
+                    baseHref += '/';
+                }
+            }
+            document.write('<base href="' + baseHref + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
     <div class="container">
@@ -54,6 +71,6 @@
         </footer>
     </div>
     
-    <script src="./static/script.js"></script>
+    <script src="static/script.js"></script>
 </body>
 </html>
