@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /venv/bin/activate
+echo "=== APPLICATION STARTUP $(date) ==="
 
 # Set default environment variables
 export HA_URL=${HA_URL:-http://supervisor/core}
@@ -11,6 +11,8 @@ export HOST=${HOST:-0.0.0.0}
 echo "--- Initial environment variables ---"
 env | sort
 echo "-----------------------------------"
+
+. /venv/bin/activate
 
 # For Home Assistant Addons - use the supervisor API token
 if [ -n "$SUPERVISOR_TOKEN" ]; then

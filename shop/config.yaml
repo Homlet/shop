@@ -1,5 +1,5 @@
 name: Shopping List Organiser
-version: "1.1.10"
+version: "1.1.11"
 slug: shop
 description: Voice-to-print shopping list processor
 url: https://github.com/Homlet/shop
@@ -10,7 +10,6 @@ init: false
 webui: http://[HOST]:[PORT:8080]
 
 homeassistant_api: true
-auth_api: true
 
 ingress: true
 ingress_port: 8080
