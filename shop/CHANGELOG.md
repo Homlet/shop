@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.12
+
+- Fix shebang
+
 ## 1.1.11
 
 - Fix API calls on addon with base tag
