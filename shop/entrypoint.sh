@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bashio
 
 echo "=== APPLICATION STARTUP $(date) ==="
 
@@ -11,8 +11,6 @@ export HOST=${HOST:-0.0.0.0}
 echo "--- Initial environment variables ---"
 env | sort
 echo "-----------------------------------"
-
-. /venv/bin/activate
 
 # For Home Assistant Addons - use the supervisor API token
 if [ -n "$SUPERVISOR_TOKEN" ]; then
@@ -52,4 +50,5 @@ env | sort
 echo "----------------------------------"
 
 echo "Starting application on $HOST:$PORT"
+. /venv/bin/activate
 python3 -m uvicorn app.main:app --host $HOST --port $PORT

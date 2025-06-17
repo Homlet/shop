@@ -4,7 +4,11 @@ slug: shop
 description: Voice-to-print shopping list processor
 url: https://github.com/Homlet/shop
 arch:
+  - aarch64
+  - amd64
+  - armhf
   - armv7
+  - i386
 boot: auto
 init: false
 webui: http://[HOST]:[PORT:8080]
