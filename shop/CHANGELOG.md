@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- Print from UI
+
 ## 1.1.12
 
 - Fix shebang
