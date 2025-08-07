@@ -21,6 +21,8 @@ from .services.list_provider import (
 )
 from .services.llm_service import get_llm_service, LLMService
 from .services.formatter import get_formatter, ReceiptFormatter
+from .services.renderer import render as render_zpl
+import socket
 
 # Configure logging
 logging.basicConfig(
@@ -168,6 +170,44 @@ async def get_stores():
         )
 
     return {"stores": stores}
+
+
+@app.post("/api/print")
+async def print_list(request: Request):
+    """Render the list to ZPL and send to printer."""
+    try:
+        data = await request.json()
+        content = data.get("content")
+        printer_address = data.get("printer_address")
+        printer_port = data.get("printer_port", 9100)
+
+        if not content or not printer_address:
+            raise HTTPException(
+                status_code=400, detail="Missing content or printer_address"
+            )
+
+        # Render the ZPL
+        zpl_data = render_zpl(content)
+
+        # Send to printer
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(10)  # 10-second timeout
+            s.connect((printer_address, printer_port))
+            s.sendall(zpl_data.encode("utf-8"))
+
+        return {"status": "ok", "message": "Successfully sent to printer"}
+
+    except socket.timeout:
+        logger.exception("Connection to printer timed out")
+        raise HTTPException(status_code=500, detail="Connection to printer timed out")
+    except socket.gaierror:
+        logger.exception("Hostname could not be resolved")
+        raise HTTPException(
+            status_code=400, detail="Hostname could not be resolved"
+        )
+    except Exception as e:
+        logger.exception("Error printing list")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

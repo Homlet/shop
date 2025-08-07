@@ -5,12 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultContainer = document.getElementById('result-container');
     const processBtn = document.getElementById('process-btn');
     const printBtn = document.getElementById('print-btn');
+    const zplPrintBtn = document.getElementById('zpl-print-btn');
     const downloadBtn = document.getElementById('download-btn');
     const backBtn = document.getElementById('back-btn');
     const storeSelect = document.getElementById('store-select');
     const loadingOverlay = document.getElementById('loading-overlay');
     const moreItemsSection = document.getElementById('more-items');
     const remainingCount = document.getElementById('remaining-count');
+    const printerIpInput = document.getElementById('printer-ip');
     
     // State
     let processedContent = null;
@@ -132,6 +134,47 @@ document.addEventListener('DOMContentLoaded', () => {
         `);
         printWindow.document.close();
     }
+
+    // Print the processed list using ZPL
+    async function printZpl() {
+        if (!processedContent) return;
+
+        const printerAddress = printerIpInput.value;
+        if (!printerAddress) {
+            alert('Please enter a printer IP address.');
+            return;
+        }
+
+        // Save printer IP to local storage
+        localStorage.setItem('printerIp', printerAddress);
+
+        loadingOverlay.style.display = 'flex';
+
+        try {
+            const response = await fetch('api/print', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: processedContent,
+                    printer_address: printerAddress,
+                }),
+            });
+
+            if (response.ok) {
+                alert('Successfully sent to printer.');
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to print.');
+            }
+        } catch (error) {
+            console.error('Error printing ZPL:', error);
+            alert(`Failed to print: ${error.message}`);
+        } finally {
+            loadingOverlay.style.display = 'none';
+        }
+    }
     
     // Download the processed list as a text file
     function downloadList() {
@@ -180,8 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
     printBtn.addEventListener('click', printList);
     downloadBtn.addEventListener('click', downloadList);
     backBtn.addEventListener('click', goBack);
+    zplPrintBtn.addEventListener('click', printZpl);
     
     // Initialize
     fetchItems();
     fetchStores();
+
+    // Load saved printer IP
+    const savedPrinterIp = localStorage.getItem('printerIp');
+    if (savedPrinterIp) {
+        printerIpInput.value = savedPrinterIp;
+    }
 });
