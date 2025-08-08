@@ -210,6 +210,63 @@ async def print_list(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/process_and_print")
+async def process_and_print_list(
+    request: Request,
+    store_name: Optional[str] = Query(
+        None, description="Store name for context"
+    ),
+    limit: Optional[int] = Query(
+        None, description="Optional limit for items to process"
+    ),
+):
+    """Process the shopping list and print it."""
+    try:
+        # Process the list first
+        processed_result = await process_list(
+            store_name=store_name, format_type="text", limit=limit
+        )
+        content = processed_result.get("content")
+
+        if not content:
+            raise HTTPException(
+                status_code=404, detail="Processed list content is empty"
+            )
+
+        # Now, get printer address from the request and print
+        try:
+            data = await request.json()
+            printer_address = data.get("printer_address")
+            printer_port = data.get("printer_port", 9100)
+        except Exception:
+            raise HTTPException(
+                status_code=400, detail="Missing printer_address in request body"
+            )
+
+        if not printer_address:
+            raise HTTPException(
+                status_code=400, detail="Missing printer_address"
+            )
+
+        # Render the ZPL
+        zpl_data = render_zpl(content)
+
+        # Send to printer
+        with socket.create_connection(
+            (printer_address, printer_port), timeout=10
+        ) as s:
+            s.sendall(zpl_data.encode("utf-8"))
+
+        return {"status": "ok", "message": "Successfully processed and sent to printer"}
+
+    except HTTPException as he:
+        # Re-raise HTTP exceptions to avoid being caught by the generic one
+        raise he
+    except Exception as e:
+        logger.exception("Error in process_and_print_list")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 if __name__ == "__main__":
     import uvicorn
 

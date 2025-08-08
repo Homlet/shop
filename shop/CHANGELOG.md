@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Process and print endpoint
+
 ## 1.2.2
 
 - Use host network mode
