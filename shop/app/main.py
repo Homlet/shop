@@ -190,16 +190,16 @@ async def print_list(request: Request):
         zpl_data = render_zpl(content)
 
         # Send to printer
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(10)  # 10-second timeout
-            s.connect((printer_address, printer_port))
+        with socket.create_connection((printer_address, printer_port)) as s:
             s.sendall(zpl_data.encode("utf-8"))
 
         return {"status": "ok", "message": "Successfully sent to printer"}
 
     except socket.timeout:
         logger.exception("Connection to printer timed out")
-        raise HTTPException(status_code=500, detail="Connection to printer timed out")
+        raise HTTPException(
+            status_code=500, detail="Connection to printer timed out"
+        )
     except socket.gaierror:
         logger.exception("Hostname could not be resolved")
         raise HTTPException(
