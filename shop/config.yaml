@@ -1,5 +1,5 @@
 name: Shopping List Organiser
-version: "1.2.0"
+version: "1.2.1"
 slug: shop
 description: Voice-to-print shopping list processor
 url: https://github.com/Homlet/shop
@@ -42,7 +42,7 @@ options:
   llm_api_key: ""
   todo_list_entity_id: "todo.shopping"
   default_store: "Newmarket Tesco"
-  receipt_width: 32
+  receipt_width: 38
   log_level: "INFO"
   stores:
     - name: Newmarket Tesco
@@ -65,3 +65,42 @@ options:
         - Meat & Fish
         - Ready-to-eat
         - Dairy
+    - name: Ely Sainsbury's
+      sections:
+        - Homeware
+        - Clothing
+        - Garden
+        - Fruit
+        - Vegetables
+        - Ready-to-eat
+        - Meat & Fish
+        - Dairy
+        - Bakery
+        - Store Cupboard
+        - Snacks & Confectionery
+        - Drinks
+        - Pet
+        - Cleaning
+        - Baby
+        - Toiletries
+        - Pharmacy
+        - Flowers
+    - name: Soham Asda
+      sections:
+        - Flowers
+        - Vegetables
+        - Fruit
+        - Meat & Fish
+        - Ready-to-eat
+        - Dairy
+        - Store Cupboard
+        - Bakery
+        - Snacks & Confectionery
+        - Garden
+        - Homeware
+        - Drinks
+        - Pet
+        - Toiletries
+        - Baby
+        - Pharmacy
+        - Cleaning
